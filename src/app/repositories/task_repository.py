@@ -99,14 +99,14 @@ class TaskRepositoryImpl:
 
     async def delete_task_(self, task_id: int) -> bool:
         query = select(Task).where(Task.id == task_id)
-        result = self.db.execute(query)
+        result = await self.db.execute(query)
         task = result.scalars().first()
 
         if task is None:
             return False
 
-        self.db.delete(task)
-        self.db.commit()
+        await self.db.delete(task)
+        await self.db.commit()
         return True
 
 def get_task_repository(db: AsyncSession = Depends(get_db)) -> TaskRepository:

@@ -11,18 +11,18 @@ class TaskService:
     def __init__(self, task_repository: TaskRepository):
         self.task_repository = task_repository
 
-    async def get_tasks(self, user_id: int) -> List[TaskOut]:
+    async def get_tasks(self, owner_id: int) -> List[TaskOut]:
         """
         Retrieve all tasks for a given user.
 
-        :param user_detail: UserDetail object containing user information.
+        :param owner_id: ID of the user whose tasks are to be retrieved.
         :return: List of TaskOut objects representing the user's tasks.
         """
 
-        if not user_id:
+        if not owner_id:
             raise ValueError("User id is required .")
 
-        if not isinstance(user_id, int):
+        if not isinstance(owner_id, int):
             raise TypeError("User ID must be an integer.")
 
         # Check if the task repository is initialized
@@ -30,19 +30,19 @@ class TaskService:
             raise ValueError("Task repository is not initialized.")
 
         # Fetch all tasks for the user
-        return await self.task_repository.get_all_tasks_by_user_id(user_id)
+        return await self.task_repository.get_all_tasks_by_user_id(owner_id)
 
-    async def get_task_by_id(self, task_id: int, user_detail: UserDetail) -> TaskOut | None:
+    async def get_task_by_id(self, task_id: int, owner_id: int) -> TaskOut | None:
         """
         Retrieve a specific task by its ID for a given user.
 
         :param task_id: ID of the task to retrieve.
-        :param user_detail: UserDetail object containing user information.
+        :param owner_id: ID of the user who owns the task.
         :return: TaskOut object representing the task, or None if not found.
         """
 
-        if not user_detail or not user_detail.id:
-            raise ValueError("User detail is required and must contain a valid user ID.")
+        if not owner_id :
+            raise ValueError("Owner id is required.")
 
         if not isinstance(task_id, int):
             raise TypeError("Task ID must be an integer.")
@@ -52,7 +52,7 @@ class TaskService:
             raise ValueError("Task repository is not initialized.")
 
         # Fetch the task by ID for the user
-        return await self.task_repository.get_task_by_id_and_user_id(task_id, user_detail.id)
+        return await self.task_repository.get_task_by_id_and_user_id(task_id, owner_id)
 
     async def create_task(self, task_data: TaskCreate, owner_id: int) -> TaskOut:
         """
@@ -146,11 +146,12 @@ class TaskService:
         return await self.update_task(task_update, owner_id)
 
 
-    async def delete_task(self, task_id: int, user_detail: UserDetail) -> bool:
+    async def delete_task(self, task_id: int, owner_id: int) -> bool:
         """
         Delete a task by its ID.
 
         :param task_id: ID of the task to delete.
+        :param owner_id: ID of the task to delete.
         :return: True if the task was deleted successfully, False otherwise.
         """
 
@@ -161,14 +162,14 @@ class TaskService:
         if not self.task_repository:
             raise ValueError("Task repository is not initialized.")
 
-        task = await self.task_repository.get_task_by_id_and_user_id(task_id, user_detail.id)
+        task = await self.task_repository.get_task_by_id_and_user_id(task_id, owner_id)
 
         # Check if the task exists before attempting to delete
         if not task:
             raise ValueError(f"Task with ID {task_id} not found.")
 
-        if task.owner_id != user_detail.id:
-            raise ValueError(f"User {user_detail.id} does not have permission to delete task {task_id}.")
+        if task.owner_id != owner_id:
+            raise ValueError(f"User {owner_id} does not have permission to delete task {task_id}.")
 
         # Delete the task by ID
         return await self.task_repository.delete_task_(task_id)
