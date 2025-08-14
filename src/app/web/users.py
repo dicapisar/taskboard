@@ -8,7 +8,7 @@ from src.app.core.config import settings
 router = APIRouter()
 templates = Jinja2Templates(directory=settings.TEMPLATE_DIR)
 
-@router.get("/")
+@router.get("")
 async def users_page(request: Request, db: AsyncSession = Depends(get_db)):
     service = UserService(db)
     users = await service.list_users()

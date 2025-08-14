@@ -6,7 +6,7 @@ from src.app.services.user_service import UserService
 
 router = APIRouter()
 
-@router.post("/", response_model=UserOut, status_code=201)
+@router.post("", response_model=UserOut, status_code=201)
 async def create_user(payload: UserCreate, db: AsyncSession = Depends(get_db)):
     service = UserService(db)
     existing = await service.repo.get_by_username(payload.username)
@@ -18,7 +18,7 @@ async def create_user(payload: UserCreate, db: AsyncSession = Depends(get_db)):
     user = await service.create_user(payload)
     return user
 
-@router.get("/", response_model=list[UserOut])
+@router.get("", response_model=list[UserOut])
 async def list_users(db: AsyncSession = Depends(get_db)):
     service = UserService(db)
     users = await service.list_users()

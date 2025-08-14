@@ -1,5 +1,6 @@
 from src.app.repositories.user_repository import UserRepository
 from src.app.schemas.user import UserCreate
+from src.app.models.user import User
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.app.core.cache import redis
 import json
@@ -13,7 +14,12 @@ class UserService:
 
     async def create_user(self, data: UserCreate):
         # invalidar cache antes o después de commit
-        user = await self.repo.create(data)
+
+        user_model = User(**data.model_dump())
+        user_model.role_id = 2
+        user_model.is_active = True
+
+        user = await self.repo.create(user_model)
         await redis.delete(CACHE_KEY_ALL_USERS)
         return user
 
