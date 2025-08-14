@@ -6,6 +6,7 @@ from fastapi.responses import RedirectResponse
 
 from src.app.api.v1 import users as api_users
 from src.app.api.v1 import login as api_login
+from src.app.api.v1 import task as api_task
 from src.app.web import users as web_users
 from src.app.web import login as web_login
 from src.app.web import main_board as web_main_board
@@ -53,6 +54,7 @@ async def add_session_middleware(request: Request, call_next):
 # API Routes
 app.include_router(api_login.router, prefix="/api/v1/login", tags=["API - Login"])
 app.include_router(api_users.router, prefix="/api/v1/users", tags=["API - Users"])
+app.include_router(api_task.router, prefix="/api/v1/tasks", tags=["API - Tasks"])
 
 # Web Routes
 app.include_router(web_users.router, prefix="/users", tags=["Web - Users"])

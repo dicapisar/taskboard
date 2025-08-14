@@ -24,13 +24,13 @@ class CacheRepositoryImpl:
         """
         Store user data in Redis cache.
         """
-        await self.redis_client.set(f"user:{session_id}", json.dumps(user_data), ex=self.expiration_time)
+        await self.redis_client.set(f"session:{session_id}", json.dumps(user_data), ex=self.expiration_time)
 
     async def get_user_session_data(self, session_id: str) -> dict | None:
         """
         Retrieve user data from Redis cache.
         """
-        user_data = await self.redis_client.get(f"user:{session_id}")
+        user_data = await self.redis_client.get(f"session:{session_id}")
 
         if user_data:
             user_data = json.loads(user_data)

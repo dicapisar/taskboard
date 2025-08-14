@@ -1,7 +1,7 @@
 from typing import List
 
 from src.app.dtos.user_detail import UserDetail
-from src.app.repositories.task_repository import TaskRepository
+from src.app.repositories.task_repository import TaskRepository, get_task_repository
 from fastapi import Depends
 
 from src.app.schemas.task import TaskOut, TaskCreate, TaskUpdate
@@ -11,7 +11,7 @@ class TaskService:
     def __init__(self, task_repository: TaskRepository):
         self.task_repository = task_repository
 
-    async def get_tasks(self, user_detail: UserDetail) -> List[TaskOut]:
+    async def get_tasks(self, user_id: int) -> List[TaskOut]:
         """
         Retrieve all tasks for a given user.
 
@@ -19,10 +19,10 @@ class TaskService:
         :return: List of TaskOut objects representing the user's tasks.
         """
 
-        if not user_detail or not user_detail.id:
-            raise ValueError("User detail is required and must contain a valid user ID.")
+        if not user_id:
+            raise ValueError("User id is required .")
 
-        if not isinstance(user_detail.id, int):
+        if not isinstance(user_id, int):
             raise TypeError("User ID must be an integer.")
 
         # Check if the task repository is initialized
@@ -30,7 +30,7 @@ class TaskService:
             raise ValueError("Task repository is not initialized.")
 
         # Fetch all tasks for the user
-        return await self.task_repository.get_all_tasks_by_user_id(user_detail.id)
+        return await self.task_repository.get_all_tasks_by_user_id(user_id)
 
     async def get_task_by_id(self, task_id: int, user_detail: UserDetail) -> TaskOut | None:
         """
@@ -136,11 +136,11 @@ class TaskService:
         # Delete the task by ID
         return await self.task_repository.delete_task_(task_id)
 
-async def get_task_service(request: Request, task_repository: TaskRepository = Depends(TaskRepository)):
+async def get_task_service(task_repository: TaskRepository = Depends(get_task_repository)):
     """
     Dependency injection for TaskService.
 
     :param task_repository: TaskRepository instance.
     :return: TaskService instance.
     """
-    return TaskService(task_repository)
+    return TaskService(task_repository=task_repository)
