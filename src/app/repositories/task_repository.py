@@ -1,4 +1,5 @@
-from typing import Protocol, List
+import datetime
+from typing import Protocol, List, Any, Coroutine
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -16,9 +17,9 @@ def task_to_task_out(task: Task) -> TaskOut:
         completed=task.is_completed,
         priority=task.priority,
         status=task.status,
-        due_date=task.due_date.isoformat() if task.due_date else None,
+        due_date=task.due_date.date(),
         subject=task.subject,
-        created_at=task.created_at.isoformat(),
+        created_at=task.created_at.date(),
         owner_id=task.owner_id
     )
 
@@ -51,7 +52,7 @@ class TaskRepositoryImpl:
 
     async def get_task_by_id_and_user_id(self, task_id, user_id) -> TaskOut | None:
         query = select(Task).where(Task.id == task_id, Task.owner_id == user_id)
-        result = self.db.execute(query)
+        result = await self.db.execute(query)
         task = result.scalars().first()
         if task is None:
             return None
@@ -66,16 +67,17 @@ class TaskRepositoryImpl:
             priority=task_data.priority,
             status=task_data.status,
             due_date=task_data.due_date,
+            created_at=datetime.date.today(),
             subject=task_data.subject
         )
         self.db.add(task)
-        self.db.commit()
-        self.db.refresh(task)
+        await self.db.commit()
+        await self.db.refresh(task)
         return TaskOut.model_validate(task)
 
-    async def update_task(self, task_id: int, task_data: TaskUpdate) -> TaskOut:
+    async def update_task(self, task_id: int, task_data: TaskUpdate) -> TaskOut | None:
         query = select(Task).where(Task.id == task_id)
-        result = self.db.execute(query)
+        result = await self.db.execute(query)
         task = result.scalars().first()
 
         if task is None:
@@ -90,8 +92,9 @@ class TaskRepositoryImpl:
         task.due_date = task_data.due_date
         task.subject = task_data.subject
 
-        self.db.commit()
-        self.db.refresh(task)
+        await self.db.commit()
+        await self.db.refresh(task)
+        task.created_at = task.created_at.date()  # Ensure created_at is in date format
         return TaskOut.model_validate(task)
 
     async def delete_task_(self, task_id: int) -> bool:

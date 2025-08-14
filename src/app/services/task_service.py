@@ -4,7 +4,7 @@ from src.app.dtos.user_detail import UserDetail
 from src.app.repositories.task_repository import TaskRepository, get_task_repository
 from fastapi import Depends
 
-from src.app.schemas.task import TaskOut, TaskCreate, TaskUpdate
+from src.app.schemas.task import TaskOut, TaskCreate, TaskUpdate, TaskStatusEnum
 
 
 class TaskService:
@@ -54,46 +54,42 @@ class TaskService:
         # Fetch the task by ID for the user
         return await self.task_repository.get_task_by_id_and_user_id(task_id, user_detail.id)
 
-    async def create_task(self, task_data: TaskCreate, user_detail: UserDetail) -> TaskOut:
+    async def create_task(self, task_data: TaskCreate, owner_id: int) -> TaskOut:
         """
         Create a new task for a given user.
 
         :param task_data: TaskCreate object containing task details.
-        :param user_detail: UserDetail object containing user information.
+        :param owner_id: UserDetail object containing user information.
         :return: TaskOut object representing the created task.
         """
 
-        if not user_detail or not user_detail.id:
-            raise ValueError("User detail is required and must contain a valid user ID.")
+        if not owner_id:
+            raise ValueError("Owner id is required.")
 
-        if not isinstance(user_detail.id, int):
-            raise TypeError("User ID must be an integer.")
+        if not isinstance(owner_id, int):
+            raise TypeError("Owner ID must be an integer.")
 
         # Check if the task repository is initialized
         if not self.task_repository:
             raise ValueError("Task repository is not initialized.")
 
-        # Validate task data
-        if not task_data.owner_id == user_detail.id:
-            raise ValueError("Task owner ID must match the user ID.")
-
         # Create the task for the user
-        return await self.task_repository.create_task(task_data, user_detail.id)
+        return await self.task_repository.create_task(task_data, owner_id)
 
-    async def update_task(self, task_data: TaskUpdate, user_detail: UserDetail) -> TaskOut:
+    async def update_task(self, task_data: TaskUpdate, owner_id: int) -> TaskOut:
         """
         Update an existing task for a given user.
 
         :param task_data: TaskUpdate object containing updated task details.
-        :param user_detail: UserDetail object containing user information.
+        :param owner_id: ID of the user who owns the task.
         :return: TaskOut object representing the updated task.
         """
 
-        if not user_detail or not user_detail.id:
-            raise ValueError("User detail is required and must contain a valid user ID.")
+        if not owner_id:
+            raise ValueError("Owner ID is required.")
 
-        if not isinstance(user_detail.id, int):
-            raise TypeError("User ID must be an integer.")
+        if not isinstance(owner_id, int):
+            raise TypeError("Owner ID must be an integer.")
 
         # Check if the task repository is initialized
         if not self.task_repository:
@@ -103,11 +99,52 @@ class TaskService:
         if not task_data.id:
             raise ValueError("Task ID is required for updating a task.")
 
-        if not self.task_repository.get_task_by_id_and_user_id(task_data.id, user_detail.id):
-            raise ValueError(f"Task with ID {task_data.id} not found for user {user_detail.id}.")
+        if not self.task_repository.get_task_by_id_and_user_id(task_data.id, owner_id):
+            raise ValueError(f"Task with ID {task_data.id} not found for user {owner_id}.")
 
         # Update the task for the user
         return await self.task_repository.update_task(task_data.id, task_data)
+
+
+    async def update_task_status(self, task_id: int, status: TaskStatusEnum, owner_id: int) -> TaskOut:
+        """
+        Update the status of an existing task for a given user.
+
+        :param task_id: ID of the task to update.
+        :param status: New status for the task.
+        :param owner_id: ID of the user who owns the task.
+        :return: TaskOut object representing the updated task.
+        """
+
+        if not owner_id:
+            raise ValueError("Owner ID is required.")
+
+        if not isinstance(owner_id, int):
+            raise TypeError("Owner ID must be an integer.")
+
+        # Check if the task repository is initialized
+        if not self.task_repository:
+            raise ValueError("Task repository is not initialized.")
+
+        # Check if the task exists
+        task = await self.task_repository.get_task_by_id_and_user_id(task_id, owner_id)
+        if not task:
+            raise ValueError(f"Task with ID {task_id} not found for user {owner_id}.")
+
+        task_update = TaskUpdate(
+            id=task_id,
+            title=task.title,
+            description=task.description,
+            completed=task.completed,
+            priority=task.priority,
+            status=status,  # Update the status
+            due_date=task.due_date,
+            subject=task.subject
+        )
+
+        # Update the task status
+        return await self.update_task(task_update, owner_id)
+
 
     async def delete_task(self, task_id: int, user_detail: UserDetail) -> bool:
         """
