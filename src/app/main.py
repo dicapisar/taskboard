@@ -10,6 +10,7 @@ from src.app.api.v1 import task as api_task
 from src.app.web import users as web_users
 from src.app.web import login as web_login
 from src.app.web import main_board as web_main_board
+from src.app.web import user_settings as web_user_settings
 from src.app.core.config import settings
 from src.app.core.database import engine, Base
 from src.app.core.cache import redis
@@ -51,17 +52,18 @@ async def add_session_middleware(request: Request, call_next):
     response = await call_next(request)
     return response
 
+# Web Routes
+app.include_router(web_main_board.router, prefix="/main", tags=["Web - Login"])
+#app.include_router(web_users.router, prefix="/users", tags=["Web - Users"])
+app.include_router(web_login.router, prefix="/login", tags=["Web - Login"])
+app.include_router(web_user_settings.router, prefix="/settings", tags=["Web - User Settings"])
+
 # API Routes
 app.include_router(api_login.router, prefix="/api/v1/login", tags=["API - Login"])
 app.include_router(api_users.router, prefix="/api/v1/users", tags=["API - Users"])
 app.include_router(api_task.router, prefix="/api/v1/tasks", tags=["API - Tasks"])
 
-# Web Routes
-app.include_router(web_users.router, prefix="/users", tags=["Web - Users"])
 
-app.include_router(web_login.router, prefix="/login", tags=["Web - Login"])
-
-app.include_router(web_main_board.router, prefix="/login", tags=["Web - Login"])
 # Static files
 app.mount("/static", StaticFiles(directory=settings.STATIC_DIR), name="static")
 
