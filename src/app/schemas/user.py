@@ -8,6 +8,13 @@ class UserCreate(UserBase):
     password: str
     pass
 
+class UserUpdate(UserBase):
+    pass
+
+class UserPasswordUpdate(BaseModel):
+    old_password: str
+    new_password: str
+
 class UserOut(UserBase):
     id: int
     

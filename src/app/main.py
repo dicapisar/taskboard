@@ -7,7 +7,8 @@ from fastapi.responses import RedirectResponse
 from src.app.api.v1 import users as api_users
 from src.app.api.v1 import login as api_login
 from src.app.api.v1 import task as api_task
-from src.app.web import users as web_users
+from src.app.api.v1 import user_settings as api_user_settings
+from src.app.api.v1 import logout as api_logout
 from src.app.web import login as web_login
 from src.app.web import main_board as web_main_board
 from src.app.web import user_settings as web_user_settings
@@ -62,6 +63,8 @@ app.include_router(web_user_settings.router, prefix="/settings", tags=["Web - Us
 app.include_router(api_login.router, prefix="/api/v1/login", tags=["API - Login"])
 app.include_router(api_users.router, prefix="/api/v1/users", tags=["API - Users"])
 app.include_router(api_task.router, prefix="/api/v1/tasks", tags=["API - Tasks"])
+app.include_router(api_user_settings.router, prefix="/api/v1/user_settings", tags=["API - User Settings"])
+app.include_router(api_logout.router, prefix="/api/v1/logout", tags=["API - Logout"])
 
 
 # Static files

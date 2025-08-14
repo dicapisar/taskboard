@@ -13,6 +13,9 @@ class UserRepository(Protocol):
     async def list_all(self) -> Sequence[User]: ...
     async def get_by_username(self, username: str) -> User | None: ...
     async def get_by_email(self, email: str) -> User | None: ...
+    async def get_user_by_id(self, user_id: int) -> User | None: ...
+    async def update_user(self, user: User) -> User: ...
+    async def delete_user(self, user_id: int) -> User | None: ...
     pass
 
 class UserRepositoryImpl:
@@ -36,6 +39,22 @@ class UserRepositoryImpl:
     async def get_by_email(self, email: str) -> User | None:
         result = await self.db.execute(select(User).where(User.email == email))
         return result.scalars().first()
+
+    async def get_user_by_id(self, user_id: int) -> User | None:
+        result = await self.db.execute(select(User).where(User.id == user_id))
+        return result.scalars().first()
+
+    async def update_user(self, user: User) -> User:
+        await self.db.commit()
+        await self.db.refresh(user)
+        return user
+
+    async def delete_user(self, user_id: int) -> User:
+        user = await self.get_user_by_id(user_id)
+        if user:
+            await self.db.delete(user)
+            await self.db.commit()
+        return user
 
 def get_user_repository(db: AsyncSession = Depends(get_db)) -> UserRepositoryImpl:
     """

@@ -2,7 +2,7 @@ from fastapi import Depends
 
 from src.app.repositories.user_repository import UserRepository, get_user_repository
 from src.app.services.cache_service import CacheService, get_cache_service
-from src.app.schemas.user import UserCreate
+from src.app.schemas.user import UserCreate, UserUpdate
 from src.app.models.user import User
 
 
@@ -59,6 +59,53 @@ class UserService:
         )
 
         return cache_users
+
+    async def update_user_details(self, user_detail: UserUpdate, user_id: int):
+
+        user = await self.user_repository.get_user_by_id(user_id)
+
+        user.email = user_detail.email.__str__()
+        user.username = user_detail.username
+
+        updated_user = await self.user_repository.update_user(user)
+
+        # Invalidate cache after updating user details
+        await self.cache_service.delete(CACHE_KEY_ALL_USERS)
+
+        return updated_user
+
+    async def update_user_password(self, user_id: int, old_password: str, new_password: str):
+        """
+        Update the user's password.
+        This method should include logic to verify the old password and set the new password.
+        """
+        user = await self.user_repository.get_user_by_id(user_id)
+        if not user or not user.password != old_password:
+            raise ValueError("Old password is incorrect or user not found")
+
+        user.password = new_password
+        updated_user = await self.user_repository.update_user(user)
+
+        # Invalidate cache after updating password
+        await self.cache_service.delete(CACHE_KEY_ALL_USERS)
+
+        return
+
+    async def delete_user(self, user_id: int):
+        """
+        Delete a user by ID.
+        This method should include logic to delete the user from the database.
+        """
+        user = await self.user_repository.get_user_by_id(user_id)
+        if not user:
+            raise ValueError("User not found")
+
+        await self.user_repository.delete_user(user_id)
+
+        # Invalidate cache after deleting user
+        await self.cache_service.delete(CACHE_KEY_ALL_USERS)
+
+        return None
 
 
 def get_user_service(user_repository: UserRepository = Depends(get_user_repository), cache_service: CacheService = Depends(get_cache_service)) -> UserService:
