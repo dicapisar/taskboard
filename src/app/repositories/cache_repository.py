@@ -9,6 +9,9 @@ from fastapi import Depends
 class CacheRepository(Protocol):
     async def set_user_session_data(self, session_id: str, user_data: dict) -> None: ...
     async def get_user_session_data(self, session_id: str) -> dict | None: ...
+    async def set(self, key: str, value: dict, ttl_seconds: int = 60) -> None: ...
+    async def get(self, key: str) -> dict | None: ...
+    async def delete(self, key: str) -> None: ...
     pass
 
 class CacheRepositoryImpl:
@@ -33,6 +36,39 @@ class CacheRepositoryImpl:
             user_data = json.loads(user_data)
 
         return user_data if user_data else None
+
+
+    async def set(self, key: str, value: dict, ttl_seconds: int = 60) -> None:
+        """
+        Set a key-value pair in the cache with an optional TTL.
+        """
+        if not key or not value:
+            raise ValueError("Key and value are required.")
+
+        await self.redis_client.set(key, json.dumps(value), ex=ttl_seconds)
+
+    async def get(self, key: str) -> dict | None:
+        """
+        Get a value from the cache by key.
+        """
+        if not key:
+            raise ValueError("Key is required.")
+
+        value = await self.redis_client.get(key)
+
+        if value:
+            return json.loads(value)
+
+        return None
+
+    async def delete(self, key: str) -> None:
+        """
+        Delete a key from the cache.
+        """
+        if not key:
+            raise ValueError("Key is required.")
+
+        await self.redis_client.delete(key)
 
 def get_cache_repository(redis_client: Redis = Depends(get_redis)) -> CacheRepositoryImpl:
     """

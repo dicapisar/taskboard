@@ -1,25 +1,46 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
-from src.app.core.database import get_db
+
+from src.app.schemas.base_response import BaseResponse
 from src.app.schemas.user import UserCreate, UserOut
-from src.app.services.user_service import UserService
+from src.app.services.user_service import UserService, get_user_service
 
 router = APIRouter()
 
-@router.post("", response_model=UserOut, status_code=201)
-async def create_user(payload: UserCreate, db: AsyncSession = Depends(get_db)):
-    service = UserService(db)
-    existing = await service.repo.get_by_username(payload.username)
+@router.post("", response_model=BaseResponse, status_code=201)
+async def create_user(payload: UserCreate, user_service: UserService = Depends(get_user_service)):
+    existing = await user_service.is_username_exists(payload.username)
     if existing:
         raise HTTPException(status_code=409, detail="Username already exists")
-    existing_email = await service.repo.get_by_email(payload.email)
+    existing_email = await user_service.is_email_exists(payload.email.__str__())
     if existing_email:
         raise HTTPException(status_code=409, detail="Email already exists")
-    user = await service.create_user(payload)
-    return user
+    user = await user_service.create_user(payload)
 
-@router.get("", response_model=list[UserOut])
-async def list_users(db: AsyncSession = Depends(get_db)):
-    service = UserService(db)
-    users = await service.list_users()
-    return users
+    data_response = BaseResponse(
+        success=True,
+        message="User created successfully",
+        http_status_code=201,
+        data={
+            "user_id": user.id,
+            "username": user.username,
+            "email": user.email.__str__(),
+            "is_admin": user.is_admin(),
+        }
+    )
+
+    return data_response
+
+@router.get("", response_model=BaseResponse, status_code=200)
+async def list_users(user_service: UserService = Depends(get_user_service)):
+    users = await user_service.list_users()
+
+    if users is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    data_response = BaseResponse(
+        success=True,
+        message="Users retrieved successfully",
+        http_status_code=200,
+        data=users
+    )
+    return data_response

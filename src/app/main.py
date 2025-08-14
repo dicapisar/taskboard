@@ -51,8 +51,8 @@ async def add_session_middleware(request: Request, call_next):
     return response
 
 # API Routes
-app.include_router(api_users.router, prefix="/api/v1/users", tags=["API - Users"])
 app.include_router(api_login.router, prefix="/api/v1/login", tags=["API - Login"])
+app.include_router(api_users.router, prefix="/api/v1/users", tags=["API - Users"])
 
 # Web Routes
 app.include_router(web_users.router, prefix="/users", tags=["Web - Users"])

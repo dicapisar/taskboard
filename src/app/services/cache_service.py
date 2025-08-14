@@ -4,7 +4,6 @@ from src.app.repositories.cache_repository import CacheRepository, get_cache_rep
 from fastapi import Depends
 
 
-
 class CacheService:
     def __init__(self, cache_repository: CacheRepository):
         self.cache_repository = cache_repository
@@ -32,6 +31,33 @@ class CacheService:
             return UserDetail(**user_data)
 
         return None
+
+    async def set(self, key: str, value: dict, ttl_seconds: int = 60) -> None:
+        """
+        Set a key-value pair in the cache with an optional TTL.
+        """
+        if not key or not value:
+            raise ValueError("Key and value are required.")
+
+        await self.cache_repository.set(key, value, ttl_seconds)
+
+    async def get(self, key: str) -> dict | None:
+        """
+        Get a value from the cache by key.
+        """
+        if not key:
+            raise ValueError("Key is required.")
+
+        return await self.cache_repository.get(key)
+
+    async def delete(self, key: str) -> None:
+        """
+        Delete a key from the cache.
+        """
+        if not key:
+            raise ValueError("Key is required.")
+
+        await self.cache_repository.delete(key)
 
 
 def get_cache_service(cache_repository: CacheRepository = Depends(get_cache_repository)) -> CacheService:
