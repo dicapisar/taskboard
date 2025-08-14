@@ -5,4 +5,4 @@ class UserDetail:
     id: int
     username: str
     email: str
-    is_superuser: bool = False
+    is_admin: bool = False

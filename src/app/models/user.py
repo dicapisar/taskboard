@@ -25,10 +25,13 @@ class User(Base):
     def __repr__(self) -> str:
         return f"<User(id={self.id}, username={self.username}, email={self.email}, is_active={self.is_active})>"
 
+    def is_admin(self) -> bool:
+        return self.role_id == 1
+
     def to_user_detail(self) -> UserDetail:
         return UserDetail(
             id=self.id,
             username=self.username,
             email=self.email,
-            is_superuser=self.role.name == "superuser" if self.role else False
+            is_admin=self.is_admin(),
         )

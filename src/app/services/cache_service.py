@@ -1,5 +1,5 @@
 from src.app.dtos.user_detail import UserDetail
-from src.app.repositories.cache_repository import CacheRepository
+from src.app.repositories.cache_repository import CacheRepository, get_cache_repository
 
 from fastapi import Depends
 
@@ -34,7 +34,7 @@ class CacheService:
         return None
 
 
-def get_cache_service(cache_repository: CacheRepository = Depends(CacheRepository)) -> CacheService:
+def get_cache_service(cache_repository: CacheRepository = Depends(get_cache_repository)) -> CacheService:
     """
     Dependency to get the cache service instance.
     """

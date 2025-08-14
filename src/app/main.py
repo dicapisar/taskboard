@@ -50,15 +50,16 @@ async def add_session_middleware(request: Request, call_next):
     response = await call_next(request)
     return response
 
-# Rutas
+# API Routes
 app.include_router(api_users.router, prefix="/api/v1/users", tags=["API - Users"])
 app.include_router(api_login.router, prefix="/api/v1/login", tags=["API - Login"])
+
+# Web Routes
 app.include_router(web_users.router, prefix="/users", tags=["Web - Users"])
 
 app.include_router(web_login.router, prefix="/login", tags=["Web - Login"])
 
 app.include_router(web_main_board.router, prefix="/login", tags=["Web - Login"])
-
 # Static files
 app.mount("/static", StaticFiles(directory=settings.STATIC_DIR), name="static")
 
