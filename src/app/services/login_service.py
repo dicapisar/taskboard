@@ -1,3 +1,4 @@
+import bcrypt
 from fastapi import Depends
 
 from src.app.models.user import User
@@ -9,8 +10,14 @@ class LoginService:
 
     async def authenticate_user(self, email: str, password: str) -> User | None:
         user = await self.repo.get_by_email(email)
-        if user and user.password == password:
+        if not user or not isinstance(user.password, str):
+            return None
+
+        password_matches = bcrypt.checkpw(password.encode(), user.password.encode())
+
+        if password_matches:
             return user
+
         return None
 
 def get_login_service(user_repository: UserRepository = Depends(get_user_repository)) -> LoginService:

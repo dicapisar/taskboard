@@ -17,11 +17,12 @@ dependencies = [
     "python-dotenv (>=1.1.1,<2.0.0)",
     "pydantic-settings (>=2.10.1,<3.0.0)",
     "redis (>=6.2.0,<7.0.0)",
-    "greenlet (>=3.2.3,<4.0.0)"
+    "greenlet (>=3.2.3,<4.0.0)",
+    "bcrypt (>=4.3.0,<5.0.0)",
 ]
 
 [tool.poetry]
-packages = [{include = "taskboard", from = "src"}]
+package-mode = false
 
 
 [tool.poetry.group.dev.dependencies]
