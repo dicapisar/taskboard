@@ -1,10 +1,343 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Main Board</title>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Taskboard</title>
+
+    <!-- Custom fonts for this template-->
+    <link href="/static/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link href="/static/css/sb-admin-2.min.css" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="/static/js/main.js"></script>
+
 </head>
-<body>
-    <h1>This is the Main Board 🚀</h1>
+
+<body id="page-top">
+
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <!-- Main Content -->
+            <div id="content">
+
+                <!-- Topbar -->
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+                    <!-- Sidebar Toggle (Topbar) -->
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa fa-bars"></i>
+                    </button>
+
+                    <!-- Topbar Search -->
+                    <div class="d-flex justify-content-center">
+                        <form
+                            class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+                            <div class="input-group">
+                                <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..."
+                                    aria-label="Search" aria-describedby="basic-addon2"/>
+                                <div class="input-group-append">
+                                    <button class="btn btn-primary" type="button">
+                                        <i class="fas fa-search fa-sm"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+
+                    <!-- Topbar Navbar -->
+                    <ul class="navbar-nav ml-auto">
+
+                        <!-- Nav Item - Search Dropdown (Visible Only XS) -->
+                        <li class="nav-item dropdown no-arrow d-sm-none">
+                            <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-search fa-fw"></i>
+                            </a>
+                            <!-- Dropdown - Messages -->
+                            <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in"
+                                aria-labelledby="searchDropdown">
+                                <form class="form-inline mr-auto w-100 navbar-search">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control bg-light border-0 small"
+                                            placeholder="Search for..." aria-label="Search"
+                                            aria-describedby="basic-addon2">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-primary" type="button">
+                                                <i class="fas fa-search fa-sm"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </li>
+
+                        <div class="topbar-divider d-none d-sm-block"></div>
+
+                        <!-- Nav Item - User Information -->
+                        <li class="nav-item dropdown no-arrow">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">User Name</span>
+                                <img class="img-profile rounded-circle"
+                                    src="/static/img/profile_images/0/user.png">
+                            </a>
+                            <!-- Dropdown - User Information -->
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                                aria-labelledby="userDropdown">
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Profile
+                                </a>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Settings
+                                </a>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Activity Log
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Logout
+                                </a>
+                            </div>
+                        </li>
+
+                    </ul>
+
+                </nav>
+                <!-- End of Topbar -->
+
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
+
+                    <!-- Page Heading -->
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h1 class="h3 mb-0 text-gray-800">Taskboard</h1>
+                        <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
+                                class="fas fa-filter fa-sm text-white-50"></i> Filter</a>
+                    </div>
+
+                    <div class="row">
+                        <div class="container-fluid py-1">
+                        <div class="row">
+                            <div class="col">
+                                <ul id="mobile-kanban-menu" class="nav nav-underline border-bottom border-1 mb-3 px-2 justify-content-between px-sm-3 d-md-none" role="tablist">
+                                    <li class="nav-item" role="presentation"><button id="queue-tab" class="nav-link active" data-bs-toggle="tab" data-bs-target="#queue-panel" type="button" role="tab" aria-controls="queue-panel" aria-selected="true">Not Started</button></li>
+                                    <li class="nav-item"><button id="serving-tab" class="nav-link" data-bs-toggle="tab" data-bs-target="#serving-panel" type="button" role="tab" aria-controls="serving-panel" aria-selected="false">In Progress</button></li>
+                                    <li class="nav-item"><button id="completed-tab" class="nav-link" data-bs-toggle="tab" data-bs-target="#completed-panel" type="button" role="tab" aria-controls="completed-panel" aria-selected="false">Blocked</button></li>
+                                    <li class="nav-item"><button id="cancelled-tab" class="nav-link" data-bs-toggle="tab" data-bs-target="#cancelled-panel" type="button" role="tab" aria-controls="cancelled-panel" aria-selected="false">Done</button></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="row gx-0 gy-1 gx-md-3 row-cols-1 row-cols-md-4 tab-content d-md-flex">
+
+                            <!-- Not Started Task Column -->
+                            <div id="queue-panel" class="col align-items-stretch tab-pane show pe-0 fade d-md-flex active kanban-col" role="tabpanel" tabindex="0">
+                                <div class="card border-0 pb-3 w-100">
+                                    <div class="card-body p-0">
+                                        <div class="justify-content-between m-3 mb-4 d-none d-md-flex">
+                                            <h6 class="fs-5 fw-normal text-dark mb-2">Not Started</h6><svg class="bi bi-three-dots-vertical" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16">
+                                                <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"></path>
+                                            </svg>
+                                        </div>
+                                        <div class="px-md-2 kanban-column pt-2 me-0 pe-1 me-md-1" ondrop="drop(event)" ondragover="allowDrop(event)">
+                                            <div class="card mb-2 kanban-card" draggable="true" data-id="1" ondragstart="drag(event)">
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between">
+                                                        <h5 class="text-muted mb-2">Suhaimi Sulaiman</h5>
+                                                        <div class="dropdown"><button class="btn btn-sm dropdown-toggle" aria-expanded="false" data-bs-toggle="dropdown" type="button" aria-haspopup="true"></button>
+                                                            <div class="dropdown-menu dropdown-menu-end"><a class="dropdown-item" href="#">Move to Serving</a><a class="dropdown-item" href="#">Move to Completed</a><a class="dropdown-item" href="#">Move to Cancelled</a>
+                                                                <div class="dropdown-divider"></div><a class="dropdown-item" href="#"><strong>Details</strong></a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="info mb-2"><span class="badge bg-secondary me-2">1/3</span><span>Arrived 30 minutes ago</span></div>
+                                                    <div class="bg-secondary-subtle border rounded-pill d-flex align-items-center" style="padding: 2px;width: fit-content;"><img class="rounded-circle" src="https://randomuser.me/api/portraits/men/13.jpg" width="22" style="margin: 1px;" /><span class="text-secondary ms-1 me-3" style="font-size: 0.9em;">Danish Firdaus</span></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- End Not Started Task Column -->
+
+                            <!-- In Progress Task Column -->
+                            <div id="serving-panel" class="col align-items-stretch tab-pane fade d-md-flex kanban-col pe-0" role="tabpanel" tabindex="0">
+                                <div class="card border-0 pb-3 w-100">
+                                    <div class="card-body p-0">
+                                        <div class="justify-content-between m-3 mb-4 d-none d-md-flex">
+                                            <h6 class="fs-5 fw-normal text-dark mb-2">In Progress</h6><svg class="bi bi-three-dots-vertical" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16">
+                                                <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"></path>
+                                            </svg>
+                                        </div>
+                                        <div class="px-md-2 kanban-column pt-2 me-0 pe-1 me-md-1" style="/*max-height: calc(100vh - 150px);*//*overflow-y: auto;*/" ondrop="drop(event)" ondragover="allowDrop(event)">
+                                            <div class="card mb-2 kanban-card" draggable="true" data-id="7" ondragstart="drag(event)">
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between">
+                                                        <h5 class="text-muted mb-0">Farith Ismeth Emir</h5>
+                                                        <div class="dropdown"><button class="btn btn-sm dropdown-toggle" aria-expanded="false" data-bs-toggle="dropdown" type="button" aria-haspopup="true"></button>
+                                                            <div class="dropdown-menu dropdown-menu-end"><a class="dropdown-item" href="#">Move to Serving</a><a class="dropdown-item" href="#">Move to Completed</a><a class="dropdown-item" href="#">Move to Cancelled</a>
+                                                                <div class="dropdown-divider"></div><a class="dropdown-item" href="#"><strong>Details</strong></a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="info mb-2"><span>Arrived 30 minutes ago</span></div>
+                                                    <div class="bg-secondary-subtle border rounded-pill d-flex align-items-center" style="padding: 2px;width: fit-content;"><img class="rounded-circle" src="https://randomuser.me/api/portraits/men/26.jpg" width="22" style="margin: 1px;" /><span class="text-secondary ms-1 me-3" style="font-size: 0.9em;">Karim Kadir</span></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- End Progress Task Column -->
+
+                            <!-- Blocked Task Column -->
+                            <div id="completed-panel" class="col align-items-stretch tab-pane fade d-md-flex kanban-col pe-0" role="tabpanel" tabindex="0">
+                                <div class="card border-0 pb-3 w-100">
+                                    <div class="card-body p-0">
+                                        <div class="justify-content-between m-3 mb-4 d-none d-md-flex">
+                                            <h6 class="fs-5 fw-normal text-dark mb-2">Blocked</h6><svg class="bi bi-three-dots-vertical" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16">
+                                                <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"></path>
+                                            </svg>
+                                        </div>
+                                        <div class="px-md-2 kanban-column pt-2 me-0 pe-1 me-md-1" style="/*max-height: calc(100vh - 150px);*//*overflow-y: auto;*/" ondrop="drop(event)" ondragover="allowDrop(event)">
+                                            <div class="card mb-2 kanban-card" draggable="true" data-id="15" ondragstart="drag(event)">
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between">
+                                                        <h5 class="text-muted mb-2">Ishak Yusof</h5>
+                                                        <div class="dropdown"><button class="btn btn-sm dropdown-toggle" aria-expanded="false" data-bs-toggle="dropdown" type="button" aria-haspopup="true"></button>
+                                                            <div class="dropdown-menu dropdown-menu-end"><a class="dropdown-item" href="#">Move to Serving</a><a class="dropdown-item" href="#">Move to Completed</a><a class="dropdown-item" href="#">Move to Cancelled</a>
+                                                                <div class="dropdown-divider"></div><a class="dropdown-item" href="#"><strong>Details</strong></a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="info mb-2"><span>Arrived 30 minutes ago</span></div>
+                                                    <div class="bg-secondary-subtle border rounded-pill d-flex align-items-center" style="padding: 2px;width: fit-content;"><img class="rounded-circle" src="https://randomuser.me/api/portraits/men/11.jpg" width="22" style="margin: 1px;" /><span class="text-secondary ms-1 me-3" style="font-size: 0.9em;">Helmi Samad</span></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Blocked Task Column -->
+
+                            <!-- Done Task Column -->
+                            <div id="cancelled-panel" class="col align-items-stretch tab-pane fade d-md-flex kanban-col" tabindex="0" role="tabpanel">
+                                <div class="card border-0 pb-3 w-100">
+                                    <div class="card-body p-0">
+                                        <div class="justify-content-between m-3 mb-4 d-none d-md-flex">
+                                            <h6 class="fs-5 fw-normal text-dark mb-2">Done</h6><svg class="bi bi-three-dots-vertical" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16">
+                                                <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"></path>
+                                            </svg>
+                                        </div>
+                                        <div class="px-md-2 kanban-column pt-2 me-0 pe-1 me-md-1" style="/*max-height: calc(100vh - 150px);*//*overflow-y: auto;*/" ondrop="drop(event)" ondragover="allowDrop(event)">
+                                            <div class="card mb-2 kanban-card" draggable="true" data-id="16" ondragstart="drag(event)">
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between">
+                                                        <h5 class="text-muted mb-2">Suhaimi Sulaiman</h5>
+                                                        <div class="dropdown"><button class="btn btn-sm dropdown-toggle" aria-expanded="false" data-bs-toggle="dropdown" type="button" aria-haspopup="true"></button>
+                                                            <div class="dropdown-menu dropdown-menu-end"><a class="dropdown-item" href="#">Move to Serving</a><a class="dropdown-item" href="#">Move to Completed</a><a class="dropdown-item" href="#">Move to Cancelled</a>
+                                                                <div class="dropdown-divider"></div><a class="dropdown-item" href="#"><strong>Details</strong></a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="info mb-2"><span>Arrived 30 minutes ago</span></div>
+                                                    <div class="bg-secondary-subtle border rounded-pill d-flex align-items-center" style="padding: 2px;width: fit-content;"><img class="rounded-circle" src="https://randomuser.me/api/portraits/men/13.jpg" width="22" style="margin: 1px;" /><span class="text-secondary ms-1 me-3" style="font-size: 0.9em;">Danish Firdaus</span></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Done Task Column -->
+                        </div>
+                    </div>
+
+                </div>
+                <!-- /.container-fluid -->
+
+            </div>
+            <!-- End of Main Content -->
+
+            <!-- Footer -->
+            <footer class="sticky-footer bg-white">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>Copyright &copy; TaskBoard 2025</span>
+                    </div>
+                </div>
+            </footer>
+            <!-- End of Footer -->
+
+        </div>
+        <!-- End of Content Wrapper -->
+
+    </div>
+    <!-- End of Page Wrapper -->
+
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+    <!-- Logout Modal-->
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <a class="btn btn-primary" href="login.html">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="/static/vendor/jquery/jquery.min.js"></script>
+    <script src="/static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="/static/vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="/static/js/sb-admin-2.min.js"></script>
+
+    <!-- Page level plugins -->
+    <script src="/static/vendor/chart.js/Chart.min.js"></script>
+
+    <!-- Page level custom scripts -->
+    <script src="/static/js/demo/chart-area-demo.js"></script>
+    <script src="/static/js/demo/chart-pie-demo.js"></script>
+
 </body>
+
+</html>

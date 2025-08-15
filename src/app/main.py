@@ -22,6 +22,11 @@ app = FastAPI(title=settings.PROJECT_NAME)
 @app.middleware("http")
 async def add_session_middleware(request: Request, call_next):
 
+    # if path is just "/", redirect to "/main"
+    if request.url.path == "/":
+        return RedirectResponse(url="/main")
+
+
     url_exceptions = [
         "/login",
         "/static",
