@@ -1,3 +1,4 @@
+import bcrypt
 from fastapi import Depends
 
 from src.app.repositories.user_repository import UserRepository, get_user_repository
@@ -20,6 +21,10 @@ class UserService:
         user_model = User(**data.model_dump())
         user_model.role_id = 2
         user_model.is_active = True
+
+        hashed_pw = bcrypt.hashpw(data.password.encode("utf-8"), bcrypt.gensalt()).decode()
+
+        user_model.password = hashed_pw
 
         user = await self.user_repository.create(user_model)
         await self.cache_service.delete(CACHE_KEY_ALL_USERS)

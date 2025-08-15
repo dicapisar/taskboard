@@ -12,6 +12,7 @@ from src.app.api.v1 import logout as api_logout
 from src.app.web import login as web_login
 from src.app.web import main_board as web_main_board
 from src.app.web import user_settings as web_user_settings
+from src.app.web import sign_up as web_sign_up
 from src.app.core.config import settings
 from src.app.core.database import engine, Base
 from src.app.core.cache import redis
@@ -34,7 +35,8 @@ async def add_session_middleware(request: Request, call_next):
         "/redoc",
         "/forgot_password",
         "/api/v1/login",
-        "/api/v1/users"
+        "/api/v1/users",
+        "/sign_up",
     ]
 
     # Check if the request URL is in the exceptions list or starts with the static files path
@@ -68,6 +70,7 @@ app.include_router(web_main_board.router, prefix="/main", tags=["Web - Login"])
 #app.include_router(web_users.router, prefix="/users", tags=["Web - Users"])
 app.include_router(web_login.router, prefix="/login", tags=["Web - Login"])
 app.include_router(web_user_settings.router, prefix="/settings", tags=["Web - User Settings"])
+app.include_router(web_sign_up.router, prefix="/sign_up", tags=["Web - Sign Up"])
 
 # API Routes
 app.include_router(api_login.router, prefix="/api/v1/login", tags=["API - Login"])
