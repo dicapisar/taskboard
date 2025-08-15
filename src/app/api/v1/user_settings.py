@@ -6,7 +6,7 @@ from src.app.schemas.base_response import BaseResponse
 from src.app.schemas.user import UserUpdate, UserPasswordUpdate
 from src.app.services.user_service import UserService, get_user_service
 
-UPLOAD_PROFILE_IMAGE_DIR = "src/app/static/images/profile_images/"
+UPLOAD_PROFILE_IMAGE_DIR = "src/app/static/img/profile_images/"
 
 router = APIRouter()
 

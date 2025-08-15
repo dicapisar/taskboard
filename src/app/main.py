@@ -32,6 +32,11 @@ async def add_session_middleware(request: Request, call_next):
         "/api/v1/users"
     ]
 
+    # Check if the request URL is in the exceptions list or starts with the static files path
+
+    if request.url.path.startswith("/static/"):
+        return await call_next(request)
+
     if request.url.path in url_exceptions:
         return await call_next(request)
 
