@@ -8,6 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
+    <link rel="icon" href="/static/img/favicon.png">
 
     <title>Taskboard</title>
 
@@ -74,9 +75,10 @@
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">User Name</span>
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{ username }}</span>
                                 <img class="img-profile rounded-circle"
-                                    src="/static/img/profile_images/0/user.png">
+                                    src="/static/img/profile_images/{{ id }}/user.png"
+                                    onerror="this.onerror=null; this.src='/static/img/profile_images/0/user.png';">
                             </a>
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"

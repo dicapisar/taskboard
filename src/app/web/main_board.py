@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, HTTPException
 from fastapi.templating import Jinja2Templates
 from src.app.core.config import settings
 
@@ -8,7 +8,13 @@ templates = Jinja2Templates(directory=settings.TEMPLATE_DIR)
 @router.get("")
 async def main_board_page(request: Request):
 
+    user_data_session = request.state.session
+
+    if not user_data_session :
+        raise HTTPException(status_code=401, detail="User not authenticated")
+
+
     return templates.TemplateResponse(
         "mainboard/mainboard.html",
-        {"request": request}
+        {"request": request, **user_data_session}
     )
