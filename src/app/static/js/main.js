@@ -295,3 +295,97 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Opcional: expone recarga manual
 window.loadTasks = loadTasks;
+
+/* ========= Crear tarea ========= */
+function getTaskPayloadFromForm(form) {
+  const status = form.status.value;
+  return {
+    title: (form.title.value || '').trim(),
+    description: (form.description.value || '').trim(),
+    completed: status === 'completed',
+    priority: Number(form.priority.value),
+    status,
+    due_date: form.due_date.value,            // "YYYY-MM-DD"
+    subject: (form.subject.value || '').trim(),
+    created_at: new Date().toISOString().slice(0, 10), // "YYYY-MM-DD"
+    // owner_id: {{ id }}  // <-- Solo si de verdad necesitas enviarlo desde el cliente
+  };
+}
+
+async function createTask(payload) {
+  const resp = await fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(payload)
+  });
+
+  let data = null;
+  try { data = await resp.json(); } catch (_) {}
+
+  if (!resp.ok) {
+    const msg = data?.message || `HTTP ${resp.status}`;
+    throw new Error(msg);
+  }
+  return data;
+}
+
+/* ========= Toast helper ========= */
+function showToast(message, variant = 'success', delay = 1500) {
+  const toastEl = document.getElementById('globalToast');
+  if (!toastEl) { alert(message); return; }
+  toastEl.classList.remove('bg-success','bg-danger','bg-warning','bg-info','bg-primary','bg-secondary','bg-dark');
+  toastEl.classList.add(`bg-${variant}`);
+  toastEl.querySelector('.toast-body').textContent = message;
+
+  const toast = bootstrap.Toast.getOrCreateInstance(toastEl, { delay });
+  toast.show();
+}
+
+/* ========= Submit del formulario ========= */
+async function handleCreateTaskSubmit(ev) {
+  ev.preventDefault();
+  const form = ev.currentTarget;
+
+  // Validación nativa de BS5
+  if (!form.checkValidity()) {
+    form.classList.add('was-validated');
+    return;
+  }
+
+  const btn = document.getElementById('submitNewTask');
+  const spinner = btn.querySelector('.spinner-border');
+  btn.disabled = true;
+  spinner.classList.remove('d-none');
+
+  try {
+    const payload = getTaskPayloadFromForm(form);
+    await createTask(payload);
+
+    // Cierra modal, limpia y notifica
+    const modalEl = document.getElementById('createTaskModal');
+    bootstrap.Modal.getOrCreateInstance(modalEl).hide();
+    form.reset();
+    form.classList.remove('was-validated');
+
+    showToast('Task created successfully.', 'success', 1200);
+
+    // Refresca todo (como pediste) después de un breve delay para que se vea el toast
+    setTimeout(() => { location.reload(); }, 1300);
+
+    // Alternativa sin recargar toda la página:
+    // await loadTasks();
+  } catch (err) {
+    showToast(`Error creating task: ${err.message}`, 'danger', 2500);
+  } finally {
+    btn.disabled = false;
+    spinner.classList.add('d-none');
+  }
+}
+
+/* ========= Hook al cargar ========= */
+document.addEventListener('DOMContentLoaded', () => {
+  // ya llamas a loadTasks() aquí
+  const form = document.getElementById('newTaskForm');
+  if (form) form.addEventListener('submit', handleCreateTaskSubmit);
+});
