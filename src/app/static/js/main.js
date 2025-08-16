@@ -67,6 +67,10 @@ function escapeHTML(str) {
     .replaceAll("'", '&#039;');
 }
 
+function setCardBusy(card, isBusy) {
+  card.classList.toggle('opacity-50', isBusy); // utilitaria de Bootstrap
+}
+
 /* ========= Menú dinámico ========= */
 function buildMoveMenuHTML(currentStatus, taskId) {
   return Object.keys(statusToLabel)
@@ -91,6 +95,49 @@ function refreshCardMenu(card) {
 function setCardStatus(card, newStatus) {
   card.dataset.status = newStatus;
   refreshCardMenu(card);
+}
+
+/* ========= Persistencia (PATCH) ========= */
+async function updateTaskStatus(taskId, newStatus) {
+  try {
+    const resp = await fetch(`${API_URL}${taskId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      credentials: 'include', // envía la cookie de sesión
+      body: JSON.stringify({ status: newStatus }),
+    });
+
+    // Si tu backend responde con JSON de error, lo capturamos
+    let data = null;
+    try { data = await resp.json(); } catch (_) { /* puede que no haya body */ }
+
+    if (!resp.ok) {
+      const msg = data?.message || `HTTP ${resp.status}`;
+      throw new Error(msg);
+    }
+    return { ok: true, data };
+  } catch (err) {
+    return { ok: false, error: err.message || String(err) };
+  }
+}
+
+async function persistCardStatus(card, newStatus, oldStatus) {
+  setCardBusy(card, true);
+  const taskId = card.dataset.id;
+  const res = await updateTaskStatus(taskId, newStatus);
+  setCardBusy(card, false);
+
+  if (!res.ok) {
+    // Revertir UI
+    const oldCol = getColumnByStatus(oldStatus);
+    if (oldCol) {
+      oldCol.appendChild(card);
+      setCardStatus(card, oldStatus);
+    }
+    alert(`No se pudo actualizar el estado de la tarea #${taskId}: ${res.error}`);
+    return false;
+  }
+  return true;
 }
 
 /* ========= Tarjeta ========= */
@@ -160,7 +207,7 @@ async function loadTasks() {
 }
 
 /* ========= Mover por menú (delegación) ========= */
-document.addEventListener('click', (ev) => {
+document.addEventListener('click', async (ev) => {
   const item = ev.target.closest('a.dropdown-item[data-move-to]');
   if (!item) return;
 
@@ -169,11 +216,16 @@ document.addEventListener('click', (ev) => {
   const card = item.closest('.kanban-card');
   if (!card) return;
 
+  const oldStatus = card.dataset.status || 'not_started';
   const targetCol = getColumnByStatus(newStatus);
   if (!targetCol) return;
 
+  // UI optimista
   targetCol.appendChild(card);
   setCardStatus(card, newStatus);
+
+  // Persistir y revertir si falla
+  await persistCardStatus(card, newStatus, oldStatus);
 });
 
 /* ========= Wrappers GLOBALS para handlers inline =========
@@ -183,12 +235,13 @@ window.allowDrop = function(event) {
 };
 
 window.drag = function(event) {
-  // Alineado con tu implementación
+  // Alineado con tu implementación + origen del estado
   event.dataTransfer.setData('text/html', event.currentTarget.outerHTML);
   event.dataTransfer.setData('text/plain', event.currentTarget.dataset.id);
+  event.dataTransfer.setData('application/x-from-status', event.currentTarget.dataset.status || 'not_started');
 };
 
-window.drop = function(event) {
+window.drop = async function(event) {
   // Quita highlight de todas las columnas
   document.querySelectorAll('.kanban-column').forEach(column => column.classList.remove('drop'));
 
@@ -197,6 +250,7 @@ window.drop = function(event) {
 
   const id = event.dataTransfer?.getData('text/plain');
   const html = event.dataTransfer?.getData('text/html');
+  const fromStatus = event.dataTransfer?.getData('application/x-from-status') || 'not_started';
   if (!id || !html) return;
 
   // Elimina la tarjeta original si existe
@@ -211,7 +265,7 @@ window.drop = function(event) {
   // Inserta la nueva tarjeta en la columna destino
   event.currentTarget.insertAdjacentHTML('beforeend', html);
 
-  // Localiza la tarjeta recién insertada y ajusta su estado + menú
+  // Localiza la tarjeta recién insertada
   let newCard;
   try {
     const list = event.currentTarget.querySelectorAll(`.kanban-card[data-id="${CSS.escape(id)}"]`);
@@ -220,16 +274,18 @@ window.drop = function(event) {
     const list = event.currentTarget.querySelectorAll(`.kanban-card[data-id="${id}"]`);
     newCard = list[list.length - 1];
   }
+  if (!newCard) return;
 
-  if (newCard) {
-    // Asegura attrs DnD en la tarjeta (por si el HTML inicial no los tenía)
-    newCard.setAttribute('draggable', 'true');
-    newCard.setAttribute('ondragstart', 'drag(event)');
+  // Asegura attrs DnD
+  newCard.setAttribute('draggable', 'true');
+  newCard.setAttribute('ondragstart', 'drag(event)');
 
-    // Actualiza status según la columna y refresca menú
-    const newStatus = getStatusByColumnEl(event.currentTarget);
-    setCardStatus(newCard, newStatus);
-  }
+  // Actualiza status según la columna y refresca menú
+  const newStatus = getStatusByColumnEl(event.currentTarget);
+  setCardStatus(newCard, newStatus);
+
+  // Persistir y revertir si falla
+  await persistCardStatus(newCard, newStatus, fromStatus);
 };
 
 /* ========= Inicio ========= */
