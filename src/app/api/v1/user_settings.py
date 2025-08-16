@@ -2,8 +2,10 @@ import os
 
 from fastapi import APIRouter, HTTPException, Request, UploadFile, File, Depends
 
+from src.app.dtos.user_detail import UserDetail
 from src.app.schemas.base_response import BaseResponse
 from src.app.schemas.user import UserUpdate, UserPasswordUpdate
+from src.app.services.cache_service import CacheService, get_cache_service
 from src.app.services.user_service import UserService, get_user_service
 
 UPLOAD_PROFILE_IMAGE_DIR = "src/app/static/img/profile_images/"
@@ -32,7 +34,7 @@ async def upload_profile_image(request: Request, file: UploadFile = File(...)):
 
     os.makedirs(user_profile_image_path, exist_ok=True)
 
-    file_path = os.path.join(user_profile_image_path, "profile_image.png")
+    file_path = os.path.join(user_profile_image_path, "user.png")
 
     with open(file_path, "wb") as buffer:
         buffer.write(await file.read())
@@ -45,7 +47,7 @@ async def upload_profile_image(request: Request, file: UploadFile = File(...)):
     )
 
 @router.post("/user_details", response_model=BaseResponse, status_code=200)
-async def update_user_details(request: Request, user_detail:  UserUpdate, user_service: UserService = Depends(get_user_service)):
+async def update_user_details(request: Request, user_detail:  UserUpdate, user_service: UserService = Depends(get_user_service), cache_service: CacheService = Depends(get_cache_service)):
     user_data_session = request.state.session
 
     if not user_data_session or not user_data_session["id"] or not isinstance(user_data_session["id"], int):
@@ -70,6 +72,20 @@ async def update_user_details(request: Request, user_detail:  UserUpdate, user_s
 
 
     await user_service.update_user_details(user_detail, user_id)
+
+    # Update user session data in cache
+    user_data_session["username"] = user_detail.username
+    user_data_session["email"] = user_detail.email.__str__()
+    session_id = request.cookies.get("session_id")
+
+    user_detail = UserDetail(
+        id=user_data_session["id"],
+        username=user_detail.username,
+        email=user_detail.email.__str__(),
+        is_admin=user_data_session.get("is_admin", False),
+    )
+
+    await cache_service.set_user_session_data(session_id, user_detail)
 
     return BaseResponse(
         success=True,
@@ -117,6 +133,10 @@ async def delete_user(request: Request, user_service: UserService = Depends(get_
     # Logic to delete the user would go here
     # For now, we will just return a success message
     await user_service.delete_user(user_id)
+
+    # Invalidate user session in cache
+    session_id = request.cookies.get("session_id")
+    await user_service.cache_service.delete(f"session:{session_id}")
 
     return BaseResponse(
         success=True,

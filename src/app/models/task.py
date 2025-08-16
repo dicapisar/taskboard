@@ -11,7 +11,7 @@ class Task(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     title: Mapped[str] = mapped_column(String(100), nullable=False)
     description: Mapped[str] = mapped_column(String(255), nullable=True)
-    owner_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    owner_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True )
     is_completed: Mapped[bool] = mapped_column(Integer, default=False, nullable=False)
     priority: Mapped[int] = mapped_column(Integer, default=1, nullable=False)  # Default priority set to 1
     due_date: Mapped[datetime] = mapped_column(DateTime, nullable=False)

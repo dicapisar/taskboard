@@ -88,8 +88,10 @@ class UserService:
         if not user or not user.password != old_password:
             raise ValueError("Old password is incorrect or user not found")
 
-        user.password = new_password
-        updated_user = await self.user_repository.update_user(user)
+        hashed_pw = bcrypt.hashpw(new_password.encode("utf-8"), bcrypt.gensalt()).decode()
+
+        user.password = hashed_pw
+        await self.user_repository.update_user(user)
 
         # Invalidate cache after updating password
         await self.cache_service.delete(CACHE_KEY_ALL_USERS)
