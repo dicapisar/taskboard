@@ -20,7 +20,7 @@ class User(Base):
     role: Mapped[Role] = relationship(back_populates="users")
 
     # Relationship with Task
-    tasks: Mapped[list["Task"]] = relationship("Task", back_populates="owner")
+    tasks: Mapped[list["Task"]] = relationship("Task", back_populates="owner", cascade="all, delete-orphan", passive_deletes=True)
 
     def __repr__(self) -> str:
         return f"<User(id={self.id}, username={self.username}, email={self.email}, is_active={self.is_active})>"
