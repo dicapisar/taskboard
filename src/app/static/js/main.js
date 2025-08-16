@@ -5,7 +5,7 @@ const statusToLabel = {
   not_started: 'Not Started',
   in_progress: 'In Progress',
   blocked: 'Blocked',
-  completed: 'completed',
+  completed: 'Completed',
 };
 
 const statusToPanelId = {
@@ -41,10 +41,9 @@ function priorityLabel(num) {
 }
 
 function priorityBadgeClass(num) {
-  // Bootstrap 5: azul=primary, amarillo=warning, rojo=danger
-  if (num === 1) return 'text-bg-primary'; // Low -> azul
-  if (num === 2) return 'text-bg-warning'; // Medium -> amarillo
-  if (num === 3) return 'text-bg-danger';  // High -> rojo
+  if (num === 1) return 'text-bg-primary';
+  if (num === 2) return 'text-bg-warning';
+  if (num === 3) return 'text-bg-danger';
   return 'text-bg-secondary';
 }
 
@@ -68,7 +67,7 @@ function escapeHTML(str) {
 }
 
 function setCardBusy(card, isBusy) {
-  card.classList.toggle('opacity-50', isBusy); // utilitaria de Bootstrap
+  card.classList.toggle('opacity-50', isBusy);
 }
 
 /* ========= Menú dinámico ========= */
@@ -88,7 +87,7 @@ function refreshCardMenu(card) {
   menu.innerHTML = `
     ${buildMoveMenuHTML(currentStatus, id)}
     <div class="dropdown-divider"></div>
-    <a class="dropdown-item" href="#"><strong>Details</strong></a>
+    <a class="dropdown-item" href="#" data-details="true" data-task-id="${id}"><strong>Details</strong></a>
   `;
 }
 
@@ -97,19 +96,18 @@ function setCardStatus(card, newStatus) {
   refreshCardMenu(card);
 }
 
-/* ========= Persistencia (PATCH) ========= */
+/* ========= Persistencia (PATCH solo status) ========= */
 async function updateTaskStatus(taskId, newStatus) {
   try {
     const resp = await fetch(`${API_URL}${taskId}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      credentials: 'include', // envía la cookie de sesión
+      credentials: 'include',
       body: JSON.stringify({ status: newStatus }),
     });
 
-    // Si tu backend responde con JSON de error, lo capturamos
     let data = null;
-    try { data = await resp.json(); } catch (_) { /* puede que no haya body */ }
+    try { data = await resp.json(); } catch (_) {}
 
     if (!resp.ok) {
       const msg = data?.message || `HTTP ${resp.status}`;
@@ -128,7 +126,6 @@ async function persistCardStatus(card, newStatus, oldStatus) {
   setCardBusy(card, false);
 
   if (!res.ok) {
-    // Revertir UI
     const oldCol = getColumnByStatus(oldStatus);
     if (oldCol) {
       oldCol.appendChild(card);
@@ -160,7 +157,9 @@ function createTaskHTML(task) {
           <div class="dropdown-menu dropdown-menu-end">
             ${buildMoveMenuHTML(status, id)}
             <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="#"><strong>Details</strong></a>
+            <a class="dropdown-item" href="#" data-details="true" data-task-id="${id}">
+              <strong>Details</strong>
+            </a>
           </div>
         </div>
       </div>
@@ -175,14 +174,13 @@ function createTaskHTML(task) {
 
 /* ========= Carga & render ========= */
 async function loadTasks() {
-  // Limpia todas las columnas (incluye la tarjeta de ejemplo)
   document.querySelectorAll('.kanban-column').forEach(col => (col.innerHTML = ''));
 
   try {
     const resp = await fetch(API_URL, {
       method: 'GET',
       headers: { 'Accept': 'application/json' },
-      credentials: 'include', // importante para enviar la cookie de sesión
+      credentials: 'include',
     });
 
     if (!resp.ok) {
@@ -220,32 +218,25 @@ document.addEventListener('click', async (ev) => {
   const targetCol = getColumnByStatus(newStatus);
   if (!targetCol) return;
 
-  // UI optimista
   targetCol.appendChild(card);
   setCardStatus(card, newStatus);
 
-  // Persistir y revertir si falla
   await persistCardStatus(card, newStatus, oldStatus);
 });
 
-/* ========= Wrappers GLOBALS para handlers inline =========
-   (compatibles con tu otro archivo de DnD) */
+/* ========= Wrappers GLOBALS para handlers inline ========= */
 window.allowDrop = function(event) {
   event.preventDefault();
 };
 
 window.drag = function(event) {
-  // Alineado con tu implementación + origen del estado
   event.dataTransfer.setData('text/html', event.currentTarget.outerHTML);
   event.dataTransfer.setData('text/plain', event.currentTarget.dataset.id);
   event.dataTransfer.setData('application/x-from-status', event.currentTarget.dataset.status || 'not_started');
 };
 
 window.drop = async function(event) {
-  // Quita highlight de todas las columnas
   document.querySelectorAll('.kanban-column').forEach(column => column.classList.remove('drop'));
-
-  // Necesario para permitir el drop
   event.preventDefault();
 
   const id = event.dataTransfer?.getData('text/plain');
@@ -253,7 +244,6 @@ window.drop = async function(event) {
   const fromStatus = event.dataTransfer?.getData('application/x-from-status') || 'not_started';
   if (!id || !html) return;
 
-  // Elimina la tarjeta original si existe
   try {
     const original = document.querySelector(`.kanban-card[data-id="${CSS.escape(id)}"]`);
     if (original) original.remove();
@@ -262,10 +252,8 @@ window.drop = async function(event) {
     if (original) original.remove();
   }
 
-  // Inserta la nueva tarjeta en la columna destino
   event.currentTarget.insertAdjacentHTML('beforeend', html);
 
-  // Localiza la tarjeta recién insertada
   let newCard;
   try {
     const list = event.currentTarget.querySelectorAll(`.kanban-card[data-id="${CSS.escape(id)}"]`);
@@ -276,25 +264,14 @@ window.drop = async function(event) {
   }
   if (!newCard) return;
 
-  // Asegura attrs DnD
   newCard.setAttribute('draggable', 'true');
   newCard.setAttribute('ondragstart', 'drag(event)');
 
-  // Actualiza status según la columna y refresca menú
   const newStatus = getStatusByColumnEl(event.currentTarget);
   setCardStatus(newCard, newStatus);
 
-  // Persistir y revertir si falla
   await persistCardStatus(newCard, newStatus, fromStatus);
 };
-
-/* ========= Inicio ========= */
-document.addEventListener('DOMContentLoaded', () => {
-  loadTasks();
-});
-
-// Opcional: expone recarga manual
-window.loadTasks = loadTasks;
 
 /* ========= Crear tarea ========= */
 function getTaskPayloadFromForm(form) {
@@ -305,10 +282,9 @@ function getTaskPayloadFromForm(form) {
     completed: status === 'completed',
     priority: Number(form.priority.value),
     status,
-    due_date: form.due_date.value,            // "YYYY-MM-DD"
+    due_date: form.due_date.value,
     subject: (form.subject.value || '').trim(),
-    created_at: new Date().toISOString().slice(0, 10), // "YYYY-MM-DD"
-    // owner_id: {{ id }}  // <-- Solo si de verdad necesitas enviarlo desde el cliente
+    created_at: new Date().toISOString().slice(0, 10),
   };
 }
 
@@ -342,12 +318,11 @@ function showToast(message, variant = 'success', delay = 1500) {
   toast.show();
 }
 
-/* ========= Submit del formulario ========= */
+/* ========= Submit del formulario (Create) ========= */
 async function handleCreateTaskSubmit(ev) {
   ev.preventDefault();
   const form = ev.currentTarget;
 
-  // Validación nativa de BS5
   if (!form.checkValidity()) {
     form.classList.add('was-validated');
     return;
@@ -362,7 +337,6 @@ async function handleCreateTaskSubmit(ev) {
     const payload = getTaskPayloadFromForm(form);
     await createTask(payload);
 
-    // Cierra modal, limpia y notifica
     const modalEl = document.getElementById('createTaskModal');
     bootstrap.Modal.getOrCreateInstance(modalEl).hide();
     form.reset();
@@ -370,11 +344,7 @@ async function handleCreateTaskSubmit(ev) {
 
     showToast('Task created successfully.', 'success', 1200);
 
-    // Refresca todo (como pediste) después de un breve delay para que se vea el toast
     setTimeout(() => { location.reload(); }, 1300);
-
-    // Alternativa sin recargar toda la página:
-    // await loadTasks();
   } catch (err) {
     showToast(`Error creating task: ${err.message}`, 'danger', 2500);
   } finally {
@@ -383,9 +353,284 @@ async function handleCreateTaskSubmit(ev) {
   }
 }
 
+/* ========= API Details: obtener por id ========= */
+async function getTaskById(taskId) {
+  const resp = await fetch(`${API_URL}${taskId}`, {
+    method: 'GET',
+    headers: { 'Accept': 'application/json' },
+    credentials: 'include'
+  });
+
+  let json = null;
+  try { json = await resp.json(); } catch (_) {}
+
+  if (!resp.ok) {
+    const msg = json?.message || `HTTP ${resp.status}`;
+    throw new Error(msg);
+  }
+  return json?.data;
+}
+
+/* ========= API Details: actualizar (POST con id en body) ========= */
+async function updateTaskFull(payload) {
+  const taskId = payload.id;
+  const apiUrl = taskId ? `${API_URL}${taskId}` : API_URL; // si no hay id, es un nuevo POST
+
+  const resp = await fetch(apiUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(payload)
+  });
+
+  let json = null;
+  try { json = await resp.json(); } catch (_) {}
+
+  if (!resp.ok) {
+    const msg = json?.message || `HTTP ${resp.status}`;
+    throw new Error(msg);
+  }
+  return json?.data ?? null;
+}
+
+/* ========= API Details: eliminar ========= */
+async function deleteTask(taskId) {
+  const resp = await fetch(`${API_URL}${taskId}`, {
+    method: 'DELETE',
+    headers: { 'Accept': 'application/json' },
+    credentials: 'include'
+  });
+
+  let json = null;
+  try { json = await resp.json(); } catch (_) {}
+
+  if (!resp.ok) {
+    const msg = json?.message || `HTTP ${resp.status}`;
+    throw new Error(msg);
+  }
+  return json?.data ?? null;
+}
+
+/* ========= Helpers UI (Details/Delete) ========= */
+function setDetailsFormBusy(isBusy) {
+  const form = document.getElementById('taskDetailsForm');
+  if (!form) return;
+
+  [...form.elements].forEach(el => {
+    if (el.id === 'submitUpdateTask') return;
+    el.disabled = isBusy;
+  });
+
+  const btn = document.getElementById('submitUpdateTask');
+  const spinner = btn?.querySelector('.spinner-border');
+  if (btn) btn.disabled = isBusy;
+  if (spinner) spinner.classList.toggle('d-none', !isBusy);
+
+  // también bloquear el botón de eliminar mientras hay busy
+  const delBtn = document.getElementById('openDeleteTask');
+  if (delBtn) delBtn.disabled = isBusy || delBtn.dataset.ready !== '1';
+}
+
+function setConfirmDeleteBusy(isBusy) {
+  const btn = document.getElementById('confirmDeleteBtn');
+  if (!btn) return;
+  const spinner = btn.querySelector('.spinner-border');
+  btn.disabled = isBusy;
+  if (spinner) spinner.classList.toggle('d-none', !isBusy);
+}
+
+function fillDetailsModal(task) {
+  const form = document.getElementById('taskDetailsForm');
+  if (!form) return;
+
+  const idInput = form.elements['id'];
+  if (idInput) idInput.value = task.id;
+
+  form.title.value = task.title ?? '';
+  form.description.value = task.description ?? '';
+  form.priority.value = Number(task.priority ?? 2);
+  form.status.value = task.status ?? (task.completed ? 'completed' : 'not_started');
+  form.due_date.value = task.due_date ?? '';
+  form.subject.value = task.subject ?? '';
+
+  const createdAt = document.getElementById('detailCreatedAt');
+  const owner = document.getElementById('detailOwner');
+  if (createdAt) createdAt.value = task.created_at ?? '';
+  if (owner) owner.value = (task.owner_id != null ? `#${task.owner_id}` : '');
+
+  // habilitar el botón Delete y marcarlo como listo
+  const delBtn = document.getElementById('openDeleteTask');
+  if (delBtn) {
+    delBtn.disabled = false;
+    delBtn.dataset.ready = '1';
+  }
+}
+
+function getTaskPayloadFromDetailsForm(form) {
+  const idField = form.elements['id'];
+  const status = form.status.value;
+  return {
+    id: idField ? Number(idField.value) : undefined,
+    title: (form.title.value || '').trim(),
+    description: (form.description.value || '').trim(),
+    priority: Number(form.priority.value),
+    status,
+    due_date: form.due_date.value,
+    subject: (form.subject.value || '').trim(),
+  };
+}
+
+function removeTaskCardById(id) {
+  try {
+    const el = document.querySelector(`.kanban-card[data-id="${CSS.escape(String(id))}"]`);
+    if (el) el.remove();
+  } catch {
+    const el = document.querySelector(`.kanban-card[data-id="${id}"]`);
+    if (el) el.remove();
+  }
+}
+
+function redrawTaskCard(task) {
+  const id = task.id;
+  const status = task.status || (task.completed ? 'completed' : 'not_started');
+  const col = getColumnByStatus(status);
+  if (!col) return;
+
+  removeTaskCardById(id);
+  col.insertAdjacentHTML('beforeend', createTaskHTML({ ...task, status }));
+}
+
+/* ========= Abrir modal Details ========= */
+async function openTaskDetails(taskId) {
+  const modalEl = document.getElementById('taskDetailsModal');
+  const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+
+  const form = document.getElementById('taskDetailsForm');
+  if (form) {
+    form.reset();
+    form.classList.remove('was-validated');
+  }
+
+  // deshabilitar temporalmente el botón Delete
+  const delBtn = document.getElementById('openDeleteTask');
+  if (delBtn) { delBtn.disabled = true; delBtn.dataset.ready = '0'; }
+
+  modal.show();
+  setDetailsFormBusy(true);
+
+  try {
+    const task = await getTaskById(taskId);
+    fillDetailsModal(task);
+  } catch (err) {
+    showToast(`Error loading task #${taskId}: ${err.message}`, 'danger', 2500);
+    modal.hide();
+    return;
+  } finally {
+    setDetailsFormBusy(false);
+  }
+}
+
+/* ========= Click en "Details" (delegación) ========= */
+document.addEventListener('click', (ev) => {
+  const link = ev.target.closest('a.dropdown-item[data-details="true"]');
+  if (!link) return;
+  ev.preventDefault();
+
+  const taskId = link.dataset.taskId || link.closest('.kanban-card')?.dataset.id;
+  if (!taskId) return;
+  openTaskDetails(taskId);
+});
+
+/* ========= Eliminar: preparar confirmación ========= */
+function prepConfirmDelete() {
+  const form = document.getElementById('taskDetailsForm');
+  if (!form) return;
+
+  const idField = form.elements['id'];
+  const id = idField ? Number(idField.value) : null;
+  const title = form.title.value || '(no title)';
+
+  const btn = document.getElementById('confirmDeleteBtn');
+  const label = document.getElementById('confirmDeleteTaskTitle');
+  if (btn) btn.dataset.taskId = String(id ?? '');
+  if (label) label.textContent = `Task Title: ${title}`;
+}
+
+/* ========= Eliminar: ejecutar ========= */
+async function executeDelete() {
+  const btn = document.getElementById('confirmDeleteBtn');
+  const taskId = btn?.dataset.taskId;
+  if (!taskId) return;
+
+  setConfirmDeleteBusy(true);
+  try {
+    await deleteTask(taskId);
+
+    // Quitar tarjeta del tablero
+    removeTaskCardById(taskId);
+
+    // Cerrar ambos modales
+    const confirmModalEl = document.getElementById('confirmDeleteModal');
+    const detailsModalEl = document.getElementById('taskDetailsModal');
+    bootstrap.Modal.getOrCreateInstance(confirmModalEl).hide();
+    bootstrap.Modal.getOrCreateInstance(detailsModalEl).hide();
+
+    showToast('Task deleted successfully.', 'success', 1500);
+  } catch (err) {
+    showToast(`Error deleting task: ${err.message}`, 'danger', 2500);
+  } finally {
+    setConfirmDeleteBusy(false);
+  }
+}
+
+/* ========= Submit del formulario de Details ========= */
+async function handleUpdateTaskSubmit(ev) {
+  ev.preventDefault();
+  const form = ev.currentTarget;
+
+  if (!form.checkValidity()) {
+    form.classList.add('was-validated');
+    return;
+  }
+
+  setDetailsFormBusy(true);
+
+  try {
+    const payload = getTaskPayloadFromDetailsForm(form);
+    if (!payload.id || Number.isNaN(payload.id)) {
+      throw new Error('Invalid task id');
+    }
+
+    const apiReturnedTask = await updateTaskFull(payload);
+    const latestTask = apiReturnedTask ?? (await getTaskById(payload.id));
+    redrawTaskCard(latestTask);
+
+    const modalEl = document.getElementById('taskDetailsModal');
+    bootstrap.Modal.getOrCreateInstance(modalEl).hide();
+
+    showToast('Task updated successfully.', 'success', 1200);
+  } catch (err) {
+    showToast(`Error updating task: ${err.message}`, 'danger', 2500);
+  } finally {
+    setDetailsFormBusy(false);
+  }
+}
+
 /* ========= Hook al cargar ========= */
 document.addEventListener('DOMContentLoaded', () => {
-  // ya llamas a loadTasks() aquí
-  const form = document.getElementById('newTaskForm');
-  if (form) form.addEventListener('submit', handleCreateTaskSubmit);
+  loadTasks();
+
+  const createForm = document.getElementById('newTaskForm');
+  if (createForm) createForm.addEventListener('submit', handleCreateTaskSubmit);
+
+  const detailsForm = document.getElementById('taskDetailsForm');
+  if (detailsForm) detailsForm.addEventListener('submit', handleUpdateTaskSubmit);
+
+  // Preparar datos al abrir el modal de confirmación
+  const openDeleteBtn = document.getElementById('openDeleteTask');
+  if (openDeleteBtn) openDeleteBtn.addEventListener('click', prepConfirmDelete);
+
+  // Ejecutar la eliminación
+  const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+  if (confirmDeleteBtn) confirmDeleteBtn.addEventListener('click', executeDelete);
 });

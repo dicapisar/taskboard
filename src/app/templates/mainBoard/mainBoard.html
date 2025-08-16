@@ -307,6 +307,104 @@
   </div>
 </div>
 
+        <!-- Modal: Task Details (ver/editar) -->
+<div class="modal fade" id="taskDetailsModal" tabindex="-1"
+     aria-labelledby="taskDetailsLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form id="taskDetailsForm" class="modal-content needs-validation" novalidate>
+      <div class="modal-header">
+        <h5 class="modal-title" id="taskDetailsLabel">Task Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+        <!-- ID oculto para saber qué tarea editar -->
+        <input type="hidden" id="detailId" name="id">
+
+        <div class="mb-3">
+          <label class="form-label" for="detailTitle">Title</label>
+          <input id="detailTitle" name="title" class="form-control" required maxlength="120">
+          <div class="invalid-feedback">Title is required.</div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="detailDescription">Description</label>
+          <textarea id="detailDescription" name="description"
+                    class="form-control" rows="3"></textarea>
+        </div>
+
+        <div class="row g-2">
+          <div class="col-md-6">
+            <label class="form-label" for="detailPriority">Priority</label>
+            <select id="detailPriority" name="priority" class="form-select" required>
+              <option value="1">Low</option>
+              <option value="2">Medium</option>
+              <option value="3">High</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label" for="detailStatus">Status</label>
+            <select id="detailStatus" name="status" class="form-select" required>
+              <option value="not_started">Not Started</option>
+              <option value="in_progress">In Progress</option>
+              <option value="blocked">Blocked</option>
+              <option value="completed">Completed</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row g-2 mt-0">
+          <div class="col-md-6">
+            <label class="form-label" for="detailDueDate">Due date</label>
+            <input type="date" id="detailDueDate" name="due_date"
+                   class="form-control" required>
+            <div class="invalid-feedback">Please choose a due date.</div>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label" for="detailSubject">Subject</label>
+            <input id="detailSubject" name="subject" class="form-control">
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
+<button id="openDeleteTask" type="button" class="btn btn-outline-danger me-auto" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" disabled>
+  Delete
+</button>
+        <button id="submitUpdateTask" class="btn btn-primary" type="submit">
+          <span class="spinner-border spinner-border-sm me-2 d-none" role="status" aria-hidden="true"></span>
+          Update
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+        <!-- Modal: Confirmar eliminación -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmDeleteLabel">Delete task?</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        This action cannot be undone.
+        <div id="confirmDeleteTaskTitle" class="mt-2 small text-muted"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancel</button>
+        <button id="confirmDeleteBtn" class="btn btn-danger" type="button">
+          <span class="spinner-border spinner-border-sm me-2 d-none" role="status" aria-hidden="true"></span>
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Toast (notificación) -->
 <div class="position-fixed bottom-0 end-0 p-3" style="z-index:1100">
   <div id="globalToast" class="toast align-items-center text-white bg-success border-0"
