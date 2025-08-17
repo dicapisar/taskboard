@@ -185,7 +185,7 @@ async function loadTasks() {
 
     if (!resp.ok) {
       console.error('HTTP error', resp.status);
-      alert('No se pudieron cargar las tareas.');
+      alert('The tasks could not be loaded.');
       return;
     }
 

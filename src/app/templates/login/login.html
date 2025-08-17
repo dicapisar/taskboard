@@ -19,6 +19,16 @@
     <!-- Custom styles for this template-->
     <link href="/static/css/sb-admin-2.min.css" rel="stylesheet">
 
+    <style>
+        body {
+  display: flex;
+  align-items: center;   /* centra vertical */
+  justify-content: center; /* centra horizontal */
+  min-height: 100vh;     /* ocupa toda la altura de la ventana */
+  margin: 0;
+}
+    </style>
+
 </head>
 
 <body class="bg-gradient-primary">
@@ -30,7 +40,7 @@
 
             <div class="col-xl-10 col-lg-12 col-md-9">
 
-                <div class="card o-hidden border-0 shadow-lg my-5">
+                <div class="card o-hidden border-0 shadow-lg">
                     <div class="card-body p-0">
                         <!-- Nested Row within Card Body -->
                         <div class="row">
@@ -58,9 +68,10 @@
                                         </button>
                                     </form>
                                     <hr>
+                                    <!--
                                     <div class="text-center">
                                         <a class="small" href="/forgot_password">Forgot Password?</a>
-                                    </div>
+                                    </div> -->
                                     <div class="text-center">
                                         <a class="small" href="/sign_up">Create an Account!</a>
                                     </div>

@@ -105,3 +105,75 @@ div.kanban-column.drop {
     background-color: #2e59d9;
     transform: scale(1.05);
 }
+
+#navigation_var_customers {
+    margin-left: 0 !important;
+}
+
+.logo-text {
+  font-family: 'Nunito', sans-serif; /* ya tienes Nunito cargado en tu template */
+  font-weight: 800; /* más grueso, estilo logo */
+  font-size: 1.8rem; /* ajusta para que quede a la par del ícono */
+  color: #2c3e50;    /* elige un color sobrio, o el primario de tu app */
+  letter-spacing: 1px; /* opcional, da aire entre letras */
+  vertical-align: middle;
+}
+
+/* Estilo base para los títulos de columna */
+.kanban-title {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 1.2rem; /* más pequeño que el logo */
+  letter-spacing: 0.5px;
+}
+
+/* Colores personalizados por estado */
+.kanban-title.not-started {
+  color: #007bff; /* Azul Bootstrap */
+}
+
+.kanban-title.in-progress {
+  color: #8B4513; /* Café / SaddleBrown */
+}
+
+.kanban-title.blocked {
+  color: #ff7f0e; /* Naranja */
+}
+
+.kanban-title.done {
+    color: #28a745; /* Verde */
+}
+
+/* Estilo base para los botones del kanban móvil */
+#mobile-kanban-menu .nav-link {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 1rem;           /* un poco más pequeño que escritorio */
+  letter-spacing: 0.5px;
+  background: transparent;
+  border: none;
+}
+
+/* Colores por estado */
+#mobile-kanban-menu #queue-tab {
+  color: #007bff; /* Azul */
+}
+
+#mobile-kanban-menu #serving-tab {
+  color: #8B4513; /* Café */
+}
+
+#mobile-kanban-menu #completed-tab {
+  color: #ff7f0e; /* Naranja */
+}
+
+#mobile-kanban-menu #cancelled-tab {
+  color: #28a745; /* Verde */
+}
+
+/* Opción: resaltar el activo con subrayado */
+#mobile-kanban-menu .nav-link.active {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  font-size: 1.05rem; /* ligeramente más grande para destacar */
+}

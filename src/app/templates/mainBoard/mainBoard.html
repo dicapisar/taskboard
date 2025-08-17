@@ -40,75 +40,50 @@
             <div id="content">
 
                 <!-- Topbar -->
-                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+<nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
 
-                    <!-- Topbar Navbar -->
-                    <ul class="navbar-nav ml-auto">
-
-                        <!-- Nav Item - Search Dropdown (Visible Only XS) -->
-                        <li class="nav-item dropdown no-arrow d-sm-none">
-                            <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-search fa-fw"></i>
-                            </a>
-                            <!-- Dropdown - Messages -->
-                            <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in"
-                                aria-labelledby="searchDropdown">
-                                <form class="form-inline mr-auto w-100 navbar-search">
-                                    <div class="input-group">
-                                        <input type="text" class="form-control bg-light border-0 small"
-                                            placeholder="Search for..." aria-label="Search"
-                                            aria-describedby="basic-addon2">
-                                        <div class="input-group-append">
-                                            <button class="btn btn-primary" type="button">
-                                                <i class="fas fa-search fa-sm"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </li>
-
-                        <div class="topbar-divider d-none d-sm-block"></div>
-
-                        <!-- Nav Item - User Information -->
-                        <li class="nav-item dropdown no-arrow">
-  <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
-     data-bs-toggle="dropdown" aria-expanded="false">
-    <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{ username }}</span>
-    <img class="img-profile rounded-circle"
-         src="/static/img/profile_images/{{ id }}/user.png"
-         onerror="this.onerror=null; this.src='/static/img/profile_images/0/user.png';">
-  </a>
-
-  <div class="dropdown-menu dropdown-menu-end shadow animated--grow-in"
-       aria-labelledby="userDropdown">
-    <a class="dropdown-item" href="/settings">
-      <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
-      Settings
+  <!-- Logo centrado -->
+  <a class="navbar-brand mx-auto d-flex align-items-center" href="/">
+      <img src="/static/img/favicon.png" alt="Taskboard" height="40" class="me-2">
+      <span class="logo-text">Taskboard</span>
     </a>
-    <div class="dropdown-divider"></div>
-    <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#logoutModal">
-      <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-      Logout
-    </a>
-  </div>
-</li>
+  <!-- Topbar Navbar -->
+  <ul class="navbar-nav ms-auto d-flex align-items-center" id="navigation_var_customers">
 
-                    </ul>
+    <div class="topbar-divider d-none d-sm-block"></div>
 
-                </nav>
-                <!-- End of Topbar -->
+    <!-- Nav Item - User Information -->
+    <li class="nav-item dropdown no-arrow">
+      <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+         data-bs-toggle="dropdown" aria-expanded="false">
+        <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{ username }}</span>
+        <img class="img-profile rounded-circle"
+             src="/static/img/profile_images/{{ id }}/user.png"
+             onerror="this.onerror=null; this.src='/static/img/profile_images/0/user.png';">
+      </a>
+
+      <div class="dropdown-menu dropdown-menu-end shadow animated--grow-in"
+           aria-labelledby="userDropdown">
+        <a class="dropdown-item" href="/settings">
+          <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+          Settings
+        </a>
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#logoutModal">
+          <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+          Logout
+        </a>
+      </div>
+    </li>
+
+  </ul>
+</nav>
+<!-- End of Topbar -->
 
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
 
                     <!-- Page Heading -->
-                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <a href="#" class=" d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
-                                class="fas fa-filter fa-sm text-white-50"></i> Filter</a>
-                    </div>
-
                     <div class="row">
                         <div class="container-fluid py-1">
                         <div class="row">
@@ -128,7 +103,7 @@
                                 <div class="card border-0 pb-3 w-100">
                                     <div class="card-body p-0">
                                         <div class="justify-content-between m-3 mb-4 d-none d-md-flex">
-                                            <h6 class="fs-5 fw-normal text-dark mb-2">Not Started</h6>
+                                            <h6 class="kanban-title not-started mb-2">Not Started</h6>
                                         </div>
                                         <div class="px-md-2 kanban-column pt-2 me-0 pe-1 me-md-1" ondrop="drop(event)" ondragover="allowDrop(event)">
                                             <!-- Not Started Task Card -->
@@ -143,7 +118,7 @@
                                 <div class="card border-0 pb-3 w-100">
                                     <div class="card-body p-0">
                                         <div class="justify-content-between m-3 mb-4 d-none d-md-flex">
-                                            <h6 class="fs-5 fw-normal text-dark mb-2">In Progress</h6>
+                                            <h6 class="kanban-title in-progress mb-2">In Progress</h6>
                                         </div>
                                         <div class="px-md-2 kanban-column pt-2 me-0 pe-1 me-md-1" style="/*max-height: calc(100vh - 150px);*//*overflow-y: auto;*/" ondrop="drop(event)" ondragover="allowDrop(event)">
                                             <!--- In Progress Task Card -->
@@ -158,7 +133,7 @@
                                 <div class="card border-0 pb-3 w-100">
                                     <div class="card-body p-0">
                                         <div class="justify-content-between m-3 mb-4 d-none d-md-flex">
-                                            <h6 class="fs-5 fw-normal text-dark mb-2">Blocked</h6>
+                                            <h6 class="kanban-title blocked mb-2">Blocked</h6>
                                         </div>
                                         <div class="px-md-2 kanban-column pt-2 me-0 pe-1 me-md-1" style="/*max-height: calc(100vh - 150px);*//*overflow-y: auto;*/" ondrop="drop(event)" ondragover="allowDrop(event)">
                                             <!-- Blocked Task Card -->
@@ -173,7 +148,7 @@
                                 <div class="card border-0 pb-3 w-100">
                                     <div class="card-body p-0">
                                         <div class="justify-content-between m-3 mb-4 d-none d-md-flex">
-                                            <h6 class="fs-5 fw-normal text-dark mb-2">Done</h6>
+                                            <h6 class="kanban-title done mb-2">Done</h6>
                                         </div>
                                         <div class="px-md-2 kanban-column pt-2 me-0 pe-1 me-md-1" style="/*max-height: calc(100vh - 150px);*//*overflow-y: auto;*/" ondrop="drop(event)" ondragover="allowDrop(event)">
                                             <!-- Done Task Card -->
