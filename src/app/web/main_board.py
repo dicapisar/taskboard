@@ -15,6 +15,6 @@ async def main_board_page(request: Request):
 
 
     return templates.TemplateResponse(
-        "main_board/main_board.html",
+        "mainboard/mainboard.html",
         {"request": request, **user_data_session}
     )
