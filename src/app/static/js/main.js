@@ -1,5 +1,6 @@
 /* ========= Config ========= */
-const API_URL = '/api/v1/tasks/';
+const BASE_URL = window.location.origin || window.location.protocol + '//' + window.location.host;
+const API_URL = BASE_URL + '/api/v1/tasks/';
 
 const statusToLabel = {
   not_started: 'Not Started',

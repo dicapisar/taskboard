@@ -284,12 +284,15 @@
   <script>
 (() => {
   /* ================== Config ================== */
+  const BASE_URL = window.location.origin || window.location.protocol + '//' + window.location.host;
+
+
   const API = {
-    uploadImage: '/api/v1/user_settings/profile_image',
-    userDetails: '/api/v1/user_settings/user_details',
-    password:    '/api/v1/user_settings/password',
-    deleteAcct:  '/api/v1/user_settings/',
-    logout:      '/api/v1/logout'
+    uploadImage: BASE_URL + '/api/v1/user_settings/profile_image',
+    userDetails: BASE_URL + '/api/v1/user_settings/user_details',
+    password:    BASE_URL + '/api/v1/user_settings/password',
+    deleteAcct:  BASE_URL + '/api/v1/user_settings/',
+    logout:      BASE_URL + '/api/v1/logout'
   };
   const MAX_AVATAR_SIZE = 5 * 1024 * 1024; // 5 MB
 
