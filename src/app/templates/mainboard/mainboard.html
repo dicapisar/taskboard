@@ -395,7 +395,11 @@
         <script>
             async function logout() {
                 try {
-                    const response = await fetch('/api/v1/logout', {
+                    const BASE_URL = window.location.origin || window.location.protocol + '//' + window.location.host;
+
+                    const URL = BASE_URL + '/api/v1/logout';
+
+                    const response = await fetch(URL, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
